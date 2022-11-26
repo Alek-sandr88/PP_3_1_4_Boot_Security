@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.servise.RoleServise;
 import ru.kata.spring.boot_security.demo.servise.UserServise;
 
 import java.util.List;
@@ -15,6 +16,12 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminController {
     private UserServise userServise;
+    private RoleServise roleServise;
+
+    @Autowired
+    public void setRoleServise(RoleServise roleServise) {
+        this.roleServise = roleServise;
+    }
 
     @Autowired
     public void setUserServise(UserServise userServise) {
@@ -24,7 +31,7 @@ public class AdminController {
     @GetMapping()
     public String allUsers(Model model, @AuthenticationPrincipal User user) {
         List<User> users = userServise.getAllUsers();
-        List<Role> listRoles = userServise.listRoles();
+        List<Role> listRoles = roleServise.getAllRoles();
         model.addAttribute("users", users);
         model.addAttribute("userObj", new User());
         model.addAttribute("listRoles", listRoles);
@@ -40,7 +47,7 @@ public class AdminController {
 
     @GetMapping("/create")
     public String newUserForm(Model model, @ModelAttribute("user") User user) {
-        List<Role> listRoles = userServise.listRoles();
+        List<Role> listRoles = roleServise.getAllRoles();
         model.addAttribute("listRoles", listRoles);
         return "create";
     }
@@ -60,13 +67,13 @@ public class AdminController {
     @GetMapping("/update/{id}")
     public String edit(@PathVariable("id") Long id, Model model) {
         User user = userServise.getUserById(id);
-        List<Role> listRoles = userServise.listRoles();
-        model.addAttribute("user", user);
+        List<Role> listRoles = roleServise.getAllRoles();
         model.addAttribute("listRoles", listRoles);
+        model.addAttribute("user", user);
         return "update";
     }
 
-    @PostMapping("/update")
+    @PatchMapping("/update")
     public String editUsers(User user) {
         userServise.updateUser(user);
         return "redirect:/admin";

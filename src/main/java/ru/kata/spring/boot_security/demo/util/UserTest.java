@@ -6,6 +6,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.servise.RoleServise;
 import ru.kata.spring.boot_security.demo.servise.UserServise;
 
 import java.util.HashSet;
@@ -15,6 +16,12 @@ import java.util.Set;
 public class UserTest implements ApplicationRunner {
 
     private UserServise userServise;
+    private RoleServise roleServise;
+
+    @Autowired
+    public void setRoleServise(RoleServise roleServise) {
+        this.roleServise = roleServise;
+    }
 
     @Autowired
     public void setUserServise(UserServise userServise) {
@@ -23,8 +30,8 @@ public class UserTest implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        Role roleAdmin = new Role( "ROLE_ADMIN");
-        Role roleUser = new Role( "ROLE_USER");
+        Role roleAdmin = new Role("ROLE_ADMIN");
+        Role roleUser = new Role("ROLE_USER");
 
         Set<Role> rolAdmin = new HashSet<>();
         Set<Role> rolUser = new HashSet<>();
@@ -32,13 +39,14 @@ public class UserTest implements ApplicationRunner {
         rolAdmin.add(roleAdmin);
         rolUser.add(roleUser);
 
-        User UserRolAdmin = new User("Ivan", "user",
-                "Ivanov", "ivan@iv", rolAdmin);
+        User UserRolAdmin = new User("admin", "admin",
+                "admin", "admin", rolAdmin);
 
-        User userRolUser = new User("Olga", "user",
-                "Sidorova", "ol@ga", rolUser);
+        User userRolUser = new User("user", "user",
+                "user", "user", rolUser);
 
-
+        roleServise.saveRole(roleAdmin);
+        roleServise.saveRole(roleUser);
         userServise.saveUser(UserRolAdmin);
         userServise.saveUser(userRolUser);
 

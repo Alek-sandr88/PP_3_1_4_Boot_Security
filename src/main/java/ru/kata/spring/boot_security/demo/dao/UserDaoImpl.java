@@ -1,9 +1,6 @@
 package ru.kata.spring.boot_security.demo.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 
 import javax.persistence.EntityManager;
@@ -14,12 +11,7 @@ import java.util.List;
 @Repository
 public class UserDaoImpl implements UserDao {
 
-    private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -36,7 +28,6 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void saveUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         entityManager.persist(user);
     }
 
@@ -49,11 +40,6 @@ public class UserDaoImpl implements UserDao {
     @Override
     public void updateUser(User updatedUser) {
         entityManager.merge(updatedUser);
-    }
-
-    @Override
-    public List<Role> listRoles() {
-        return entityManager.createQuery("select r from Role  r", Role.class).getResultList();
     }
 
     @Override
